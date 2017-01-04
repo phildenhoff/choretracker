@@ -83,6 +83,28 @@ function signOut () {
   location.reload()
 }
 
+//// CONFIRMATION SECTION
+function initConfirm () {
+  socket.emit('reqConfirmTask')
+  console.log('Requested confirmation task')
+
+  socket.on('getConfirmTask', function (data) {
+    console.log(`Got confirmation task with id ${data[5]}`)
+    document.getElementById('queue_user').innerHTML = data[0].charAt(0).toUpperCase() + data[0].slice(1)
+    document.getElementById('queue_task').innerHTML = JSON.parse(localStorage.taskData)[data[1]][1].toLowerCase() // should access local storage at key 'taskname', grab task proper name
+  })
+}
+
+function confirmYes () {
+  socket.emit('reqConfirmTask')
+}
+
+function confirmNo () {
+
+}
+
+//// OTHER SHIT LATER
+
 function claimed () {
   // user claimed points on last page. Here, update with live view of how many
   // points added, and what user running total is

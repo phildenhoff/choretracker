@@ -3,6 +3,7 @@ var express = require('express')
 var app = express()
 var http = require('http').Server(app)
 const path = require('path')
+const uuid = require('node-uuid')
 
   // SOCKET IO
 var io = require('socket.io')(http)
@@ -89,12 +90,13 @@ io.on('connection', function (socket) {
     data[0] = data[0].split(':')
     var taskID = data[1].split(':')[1] // <-- this is task
     var taskWorth = tasks[taskID][0] // <-- this is the task worth
+    var queueID = uuid.v1() // unique identifier
     // console.log('task worth: ' + taskWorth)
     scoreUpdate(data[0][1], taskWorth)
     // console.log(score)
 
     // should push username, taskname, point worth at time of adding, time + date submitted to queue, expiry date
-    confirmationQueue.push([data[0][1], taskID, taskWorth, submitDate.getTime(), expiryDate.getTime()])
+    confirmationQueue.push([data[0][1], taskID, taskWorth, submitDate.getTime(), expiryDate.getTime(), queueID])
     // console.log(confirmationQueue.shift())
     console.log('TASK: ', `${data[0][1]} did ${taskID} for ${taskWorth} point(s) on ${submitDate}. It will expire ${expiryDate}`)
   })
@@ -102,6 +104,10 @@ io.on('connection', function (socket) {
   // user reqests list of tasks
   socket.on('taskData', function () {
     io.sockets.connected[socket.id].emit('taskList', tasks)
+  })
+
+  socket.on('reqConfirmTask', function() {
+    io.sockets.connected[socket.id].emit('getConfirmTask', confirmationQueue[0])
   })
 })
 
@@ -126,7 +132,7 @@ function scoreUpdate (username, addedpoints) {
 
 // load tasks from CSV into array
 function loadTasks () {
-  fs.createReadStream('tasks.csv') // file name
+  fs.createReadStream('tasks.csv')
     .pipe(csv())
     .on('data', function (data) {
       if (data[0] !== 'taskName') { // ignoring the first line (with titles)

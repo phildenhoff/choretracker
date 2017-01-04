@@ -8,7 +8,7 @@
 		<title> golden_stars_r_us</title>
 	</head>
 
-	<body onload='load()'>
+	<body onload='load(); initConfirm()'>
 		<div class='scoreHeader'>
 			<span class='userScore' id='phil'>
 				 Phil: 0 &#x1F31F;
@@ -26,7 +26,7 @@
 
 		<div class='content'>
 			<span class='contentHeader'>
-				Did <span class='queue_user'> User2 </span> <span class='queue_action'>do a historical task?</span>
+				Did <span id='queue_user'> User2 </span> <span id='queue_task'>do a historical task</span>?
 			</span>
 			<div class='claimBody'>
 				<span class='btn confirmYesBtn' onClick='claimYes()'> Yes </span>
