@@ -1,0 +1,52 @@
+<html>
+	<head>
+		<script src="/public/scripts/main.js"></script>
+		<link rel='stylesheet' type='text/css' href='/public/style.css'>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title> golden_stars_r_us</title>
+	</head>
+
+	<body onload='load()'>
+		<div class='scoreHeader'>
+			<span class='userScore' id='phil'>
+				 Phil: 0 &#x1F31F;
+			</span>
+			<span class='userScore' id='karl'>
+				 Karl: 0 &#x1F31F;
+			</span>
+			<span class='userScore' id='ross'>
+				 Ross: 0 &#x1F31F;
+			</span>
+			<span class='userScore alt' id='alt'>
+				Username: 0 &#x1F31F;
+			</span>
+		</div>
+
+		<div class='content'>
+			<span id='userLeadScore'>
+				Currently <span id='highscoreUsername'></span> is in the lead, with <span id='highscorePoints'></span> points!
+			</span>
+			<a href='/public/claim.html'>
+			<span class='btn claimBtn'>
+				Claim &#x1F31F;
+			</span>
+			</a>
+			<a href='/public/confirm.html'>
+			<span class='btn confirmBtn'>
+				Confirm &#x1F31F;
+			</span>
+			</a>
+
+			<span class='signOut' onClick='signOut()'>
+				Sign out?
+			</span>
+
+
+			<script src="/socket.io/socket.io.js"></script>
+			<script>
+    		var socket = io();
+  		</script>
+		</div>
+
+	</body>
+</html>

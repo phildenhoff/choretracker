@@ -1,0 +1,35 @@
+@-webkit-keyframes glow {
+  from {
+    background-color: #ECF0F1;
+  }
+  50% {
+    background-color: #ff9844;
+  }
+  to {
+    background-color: #ECF0F1;
+  }
+}
+
+@keyframes glow {
+  from {
+    background-color: #ECF0F1;
+  }
+  50% {
+    background-color: #ff9844;
+  }
+  to {
+    background-color: #ECF0F1;
+  }
+}
+
+.animated {
+  -webkit-animation-duration: 2s;
+  animation-duration: 1.5s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+.selected {
+  -webkit-animation-name: glow;
+  animation-name: glow;
+}

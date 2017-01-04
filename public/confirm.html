@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<script src="/public/scripts/main.js"></script>
+		<script src="/public/scripts/claimScript.js"></script>
+		<link rel='stylesheet' type='text/css' href='/public/style.css'>
+		<link rel='stylesheet' type='text/css' href='/public/styles/slider.css'>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title> golden_stars_r_us</title>
+	</head>
+
+	<body onload='load()'>
+		<div class='scoreHeader'>
+			<span class='userScore' id='phil'>
+				 Phil: 0 &#x1F31F;
+			</span>
+			<span class='userScore' id='karl'>
+				 Karl: 0 &#x1F31F;
+			</span>
+			<span class='userScore' id='ross'>
+				 Ross: 0 &#x1F31F;
+			</span>
+			<span class='userScore alt' id='alt'>
+				Username: 0 &#x1F31F;
+			</span>
+		</div>
+
+		<div class='content'>
+			<span class='contentHeader'>
+				Did <span class='queue_user'> User2 </span> <span class='queue_action'>do a historical task?</span>
+			</span>
+			<div class='claimBody'>
+				<span class='btn confirmYesBtn' onClick='claimYes()'> Yes </span>
+				<span class='btn confirmNoBtn' onClick='claimNo()'> No </span>
+
+				<div><label class="switch">
+					<input type="checkbox">
+  				<div class="slider round"></div>
+					<span class="text">Thank them!</span>
+				</label></div>
+			</div>
+
+			<a href="/public/index.html"><span class='backHome'> Nevermind, take me home </span></a>
+			<span class='signOut' onClick='signOut()'>
+				Sign out?
+			</span>
+
+			<script src="/socket.io/socket.io.js"></script>
+  		<script>
+    		var socket = io();
+  		</script>
+		</div>
+
+	</body>
+</html>

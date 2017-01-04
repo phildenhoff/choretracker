@@ -1,0 +1,63 @@
+<html>
+	<head>
+		<script src="/public/scripts/main.js"></script>
+		<script src="/public/scripts/claimScript.js"></script>
+		<link rel='stylesheet' type='text/css' href='/public/style.css'>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title> golden_stars_r_us</title>
+	</head>
+
+	<body onload='load(); claimLoad()'>
+		<div class='scoreHeader'>
+			<span class='userScore' id='phil'>
+				 Phil: 0 &#x1F31F;
+			</span>
+			<span class='userScore' id='karl'>
+				 Karl: 0 &#x1F31F;
+			</span>
+			<span class='userScore' id='ross'>
+				 Ross: 0 &#x1F31F;
+			</span>
+			<span class='userScore alt' id='alt'>
+				Username: 0 &#x1F31F;
+			</span>
+		</div>
+
+		<div class='content'>
+			<span class='contentHeader'>
+				Great! <br class="contentHeaderBreak" />What did you do?
+			</span>
+			<div class='claimBody'>
+				<select id='selectClaim' onchange='newClaim()'>
+					<option value='fight_bear'> Fought a bear</option>
+					<option value='swim_pacific'> Swam across the pacific ocean</option>
+					<option value='died_fighting'> Died fighting in the Great War </option>
+					<option value='surgery'> Performed open-heart surgery on a squirrel </option>
+					<option value='killed_squirrel'> Accidentally killed a squirrel from botched surgery </option>
+					<option value='made_man'> Made a man out of you </option>
+					<option value='let_go'> Let it go </option>
+				</select>
+
+				<span class='actionText'> Oh really? You <span id='chosenAction'>fought a bear</span>, a <span id='pointsWorth'>2</span> point task. Look at you go!
+			</div>
+
+			<span class='proceedText'> Ready to claim your points? Click below, and it'll be added to the confirmation queue.</span>
+
+			<!-- <a href='/public/claimed.html'> -->
+				<span class='btn proceedBtn' onClick='submitClaim()'> Done </span>
+			<!--</a> -->
+
+
+			<a href="/public/index.html"><span class='backHome'> Nevermind, take me home </span></a>
+			<span class='signOut' onClick='signOut()'>
+				Sign out?
+			</span>
+
+			<script src="/socket.io/socket.io.js"></script>
+  		<script>
+    		var socket = io();
+  		</script>
+		</div>
+
+	</body>
+</html>

@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<script src="scripts/claimScript.js"></script>
+		<script src="scripts/main.js"></script>
+		<link rel='stylesheet' type='text/css' href='/public/style.css'>
+		<link rel='stylesheet' type='text/css' href='/public/animation.css'>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title> golden_stars_r_us</title>
+	</head>
+
+	<body onload='load(); claimed()'>
+		<div class='scoreHeader'>
+			<span class='userScore' id='phil'>
+				 Phil: 0 &#x1F31F;
+			</span>
+			<span class='userScore' id='karl'>
+				 Karl: 0 &#x1F31F;
+			</span>
+			<span class='userScore' id='ross'>
+				 Ross: 0 &#x1F31F;
+			</span>
+			<span class='userScore alt' id='alt'>
+				Username: 0 &#x1F31F;
+			</span>
+		</div>
+
+		<div class='content'>
+			<span class='contentHeader'>
+				Nice! I've added <span id='pointsWorth'> </span> point<span id='gainedPointsPlural'>s</span> to your total.
+			</span>
+			<div class='claimBody'>
+
+				<span class='actionText'> Your total score is now <span id='userTotalScore'> </span> points.
+			</div>
+
+			<span class='proceedText'> If no one is able to confirm your task within 30 days, these points will be subtracted from your total. </span>
+
+			<a href='/public/index.html'>
+				<span class='btn proceedBtn'> Got it! </span>
+			</a>
+
+			<span class='signOut' onClick='signOut()'>
+				Sign out?
+			</span>
+
+			<script src="/socket.io/socket.io.js"></script>
+			<script>
+    		var socket = io();
+  		</script>
+		</div>
+
+	</body>
+</html>

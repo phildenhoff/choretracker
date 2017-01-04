@@ -1,0 +1,218 @@
+@media screen and (max-width: 500px) {
+    body {
+    	font-size: 120%;
+    }
+		/* added body to increase specificity, forcing this property */
+		body .content .btn{
+			width:40vw;
+		}
+		body .content .proceedBtn {
+			top: 70vh;
+		}
+		.contentHeader .contentHeaderBreak {
+			display: block;
+		}
+}
+
+body {
+	font-size: 110%;
+	margin: 0;
+	width:100vw;
+	overflow-x: hidden;
+}
+
+a {
+	text-decoration: inherit;
+	color:inherit;
+}
+
+/* Color style
+ * from https://color.adobe.com/Flat-UI-color-theme-2469224/
+ * #2C3E50 | #E74C3C | #ECF0F1 | #3498DB | #2980B9
+ *
+ */
+
+.scoreHeader {
+	width: 100vw;
+	height: 5vh;
+	background-color: #2C3E50;
+	display: inline-block;
+	padding: 2vh;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 5vh;
+	font-family: monospace;
+  margin-top: 0!important;
+}
+
+.scoreHeader .userScore {
+	width:30vw;
+	display: inline-block;
+	color: #ECF0F1;
+	pointer-events: none;
+}
+
+.scoreHeader .selected.alt {
+  opacity: 1;
+  background-color: orange!important;
+  border-radius: 0;
+  transition: opacity .5s ease-in, color .5s ease-in, background-color .5s ease-in;
+}
+
+.scoreHeader .alt {
+  opacity: 0;
+  width: 100%;
+  left: 0%;
+  position: absolute;
+  top: 9vh;
+  border-radius: 0;
+  transition: opacity .5s ease-out, color .5s ease-out, background-color .5s ease-out;
+}
+
+.scoreHeader .selected {
+	background-color: #ECF0F1;
+	color:#2C3E50;
+	border-radius:10px;
+	box-shadow: 4px 5px 15px 0 rgba(0,0,0,.22);
+	-webkit-font-smoothing: antialiased;
+	backface-visibility: hidden;
+	transform: translateZ(0);
+	transition: background-color .5s ease-in, color .5s ease-in;
+}
+
+.signOut {
+	width: 100vw;
+	background-color: #E74C3C;
+	color: #2c3e50;
+	height: 0.5vh;
+	position: fixed;
+	left: 0;
+	bottom:0;
+	opacity: 0;
+	padding: 1%;
+	transition: all .15s ease-in;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 5vh;
+	font-family: monospace;
+	cursor: pointer;
+}
+.signOut:hover {
+	z-index: 1;
+	height: 5vh;
+	opacity:1;
+	transition: all .15s ease-in;
+}
+
+.backHome {
+	position: absolute;
+	bottom: 5vh;
+	right: 5vh;
+	color: #9e9e9e;
+}
+.backHome:hover {
+		text-decoration: underline;
+}
+
+/*
+ *
+ * Content text and styling
+ *
+ */
+
+.content {
+	font-family: monospace;
+	color:#2C3E50;
+}
+
+.content #userLeadScore {
+	width:100vw;
+	position: absolute;
+	display:inline-block;
+	text-align:center;
+	top:20vh;
+}
+
+.content .btn {
+	width:20vw;
+	height: 10vh;
+	left:50vw;
+	position: absolute;
+	text-align:center;
+	line-height: 10vh;
+	box-shadow: 4px 5px 15px 0 rgba(0,0,0,.22);
+	border-radius: 10px;
+	font-size: 1.5em;
+	cursor: pointer;
+	transition: background-color .15s ease-in-out;
+}
+
+.contentHeader, .content .claimBody {
+	text-align: center;
+	width: 100vw;
+	display: inline-block;
+	margin-top:7vh; /* for header, is overwritten later */
+}
+
+.actionText {
+	margin-top: 7vh;
+	display: block;
+}
+.contentHeader {
+  font-size: 3em;
+}
+.contentHeaderBreak {
+	display: none;
+}
+.proceedText {
+	text-align: center;
+	width: 100vw;
+	position: absolute;
+	top: 60vh;
+	display: inline-block;
+}
+
+/*
+ *
+ * Buttons
+ *
+ */
+
+ .confirmYesBtn {
+   left: 25vw!important;
+   background-color: #9cd855;
+ }
+ .confirmNoBtn {
+   background-color: #e91e63;
+   color: #FFFFFF;
+ }
+
+.claimBtn, .proceedBtn {
+	background-color: #3498DB;
+	top:50vh;
+	transform: translate(-50%, 0);
+}
+.proceedBtn {
+	top: 65vh;
+}
+.claimBtn:hover, .proceedBtn:hover {
+	background-color: #2E87C2
+}
+
+.confirmBtn {
+	background-color: #DFA06D;
+	top:75vh;
+	transform: translate(-50%, 0);
+}
+.confirmBtn:hover {
+	background-color: #C99062;
+}
+
+.switch .text {
+  display: inline-block;
+  padding-left: 72px;
+  font-size: 1.1em;
+  width: 120px;
+  vertical-align: middle;
+  height: 36px;
+}
