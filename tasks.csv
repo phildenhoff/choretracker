@@ -1,0 +1,29 @@
+taskName,points,ID
+"Fought a bear",2,fight_bear
+"Swam across the pacific ocean",1,swim_ocean
+"Died fighting in the Great War",1,died_fighting
+"Performed open-heart surgery on a squirrel",1,surgery
+"Accidentally killed a squirrel from botched surgery",1,killed_squirrel
+"Made a man out of you",5,made_man
+"Let it go",2,let_go
+"Defused the bomb",6,bomb
+"Had a hard poop. The one you sweat over",18,hard_poop
+"Brought the garbage can in",1,garbage_in
+"Cleaned around the toilet",2,clean_toilet
+"Cleaned the countertop",1,clean_counter
+"Cleaned the exterior stairs",1,clean_ext_stairs
+"Cleaned the microwave",1,clean_microwave
+"Cleaned the stove",1,clean_stove
+"Emptied the kitchen waste",1,empty_waste
+"Emptied the compost",1,empty_compost
+"Took out the recycling to the street",1,recycling
+"Unloaded the dishwasher",1,dishwasher
+"Vacuumed behind the washer/dryer",1,vacuum_washer
+"Vacuumed the main floor",1,vacuum_main
+"Vacuumed the kitchen",1,vacuum_kitchen
+"Vacuumed the living/dining room floor, including pantry",1,vacuum_floor
+"Washed the floor mat",1,floor_mat
+"Wiped down the interior of the shower",1,wipe_int_shower
+"Wiped down the exterior of the shower",1,wipe_ext_shower
+"Wiped the sink and the mirror",1,wipe_mirror_sink
+"Did an action one other person thought is star worthy",1,other_action
