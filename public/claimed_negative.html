@@ -1,0 +1,52 @@
+<html>
+	<head>
+		<script src="scripts/confirmedScript.js"></script>
+		<script src="scripts/main.js"></script>
+		<link rel='stylesheet' type='text/css' href='/public/style.css'>
+		<link rel='stylesheet' type='text/css' href='/public/animation.css'>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title> golden_stars_r_us</title>
+	</head>
+
+	<body onload='load()'>
+		<div class='scoreHeader'>
+			<span class='userScore' id='phil'>
+				 Phil: 0 &#x1F31F;
+			</span>
+			<span class='userScore' id='karl'>
+				 Karl: 0 &#x1F31F;
+			</span>
+			<span class='userScore' id='ross'>
+				 Ross: 0 &#x1F31F;
+			</span>
+			<span class='userScore alt' id='alt'>
+				Username: 0 &#x1F31F;
+			</span>
+		</div>
+
+		<div class='content'>
+			<span class='contentHeader'>
+				Damn, that sucks.
+			</span>
+
+
+			<div class='claimBody'>
+				<span class='actionText'> That stinkin' liar! <br> Their task has been removed, and their points taken back.
+			</div>
+
+			<a href='/public/index.html'>
+				<span class='btn proceedBtn'> Take me home! </span>
+			</a>
+
+			<span class='signOut' onClick='signOut()'>
+				Sign out?
+			</span>
+
+			<script src="/socket.io/socket.io.js"></script>
+			<script>
+    		var socket = io();
+  		</script>
+		</div>
+
+	</body>
+</html>

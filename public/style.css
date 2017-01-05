@@ -87,8 +87,8 @@ a {
 	height: 0.5vh;
 	position: fixed;
 	left: 0;
-	bottom:0;
-	opacity: 0;
+	bottom: -2vh;
+	opacity: .5;
 	padding: 1%;
 	transition: all .15s ease-in;
 	text-align: center;
@@ -101,6 +101,7 @@ a {
 	z-index: 1;
 	height: 5vh;
 	opacity:1;
+  bottom: 0vh;
 	transition: all .15s ease-in;
 }
 
@@ -182,11 +183,16 @@ a {
    left: 25vw!important;
    background-color: #9cd855;
  }
+ .confirmYesBtn:hover {
+   background-color: #8bc14b;
+ }
  .confirmNoBtn {
    background-color: #e91e63;
    color: #FFFFFF;
  }
-
+ .confirmNoBtn:hover {
+   background-color: #cc1452;
+ }
 .claimBtn, .proceedBtn {
 	background-color: #3498DB;
 	top:50vh;

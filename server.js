@@ -18,6 +18,7 @@ var score = {karl: 0, phil: 0, ross: 0}
 var highestScore = ['no one', 0]
 var tasks = {}
 var confirmationQueue = []
+var burntTasks = []
 
 // SETTINGS \\
 var VERBOSE = false
@@ -29,18 +30,28 @@ app.get('/', function (req, res) {
 })
 
 http.listen(3001, function () {
-  console.log('listening on *:3001')
+  if (VERBOSE) console.log('listening on *:3001')
 })
 
 // Every five seconds, score data is writen to CSV & score list is updated
 setInterval(function () {
-  var stream = fs.createWriteStream('scoreData.txt')
-  stream.once('open', function (fd) {
+  // write score data
+  var scoreStream = fs.createWriteStream('scoreData.txt')
+  scoreStream.once('open', function (fd) {
     for (var user in score) {
-      stream.write(user + ',' + score[user] + '\n')
+      scoreStream.write(user + ',' + score[user] + '\n')
     }
-    stream.end()
+    scoreStream.end()
     if (VERBOSE) console.log('MNTN: Wrote score to txt')
+  })
+  // write burnt tasks
+  var burntStream = fs.createWriteStream('burntTasks.txt')
+  burntStream.once('open', function (fd) {
+    for (var task of burntTasks) {
+      burntStream.write(task + '\n')
+    }
+    burntStream.end()
+    if (VERBOSE) console.log('MNTN: Wrote burnt tasks to txt')
   })
   scoreUpdate()
 }, 10000)
@@ -53,63 +64,81 @@ scoreUpdate()
 // send oldest claim to user who goes to 'claim' page. Only remove from queue once answer is supplied
 // claims can be confirmed/denied
 // wipe scores remaing in queue on a certain day and remove scores from userscore
-// give monthly stats of who is highest
-// highschol
+// give monthly stats of who is highest scoring
 //
 // change layout from many HTML pages to one react pages
 
 io.on('connection', function (socket) {
   if (VERBOSE) console.log(socket.id + ' connected')
 
+    // why the fuck is this here if it does nothing?
   socket.on('connect', function () {
   })
 
   socket.on('auth', function (username) {
-    // may want some authentication in the future...
     users[socket.id] = username
     if (VERBOSE) console.log(socket.id + ' is now ' + username)
-    // also do sign-in duties now, instead of waiting for next broadcast
-    // console.log('New user scoreUpdate, highestScore, taskList')
     io.emit('scoreUpdate', score)
     io.emit('highestScore', highestScore)
     io.emit('taskList', tasks)
   })
 
-  // user claims to do task
   socket.on('claim', function (data) {
     // data will come array in form:
     // [username:<username>, task:<taskName>]
-
     var submitDate = new Date()
     // expires exactly 30 days (in ms) later
     var expiryDate = new Date(submitDate.getTime() + 2592000000)
-
     data = data.split(';')
     data[0] = data[0].split(':')
     var taskID = data[1].split(':')[1] // <-- this is task
     var taskWorth = tasks[taskID][0] // <-- this is the task worth
     var queueID = uuid.v1() // unique identifier
     scoreUpdate(data[0][1], taskWorth)
-
-    // should push username, taskname, point worth at time of adding, time + date submitted to queue, expiry date
+    // should push username, taskname, point worth at time of adding, time + date submitted to queue, expiry date, and unique queue ID
     confirmationQueue.push([data[0][1], taskID, taskWorth, submitDate.getTime(), expiryDate.getTime(), queueID])
-
     console.log('TASK: ', `${data[0][1]}, ${taskID}, ${taskWorth} point,  on ${submitDate.toUTCString()}, expires ${expiryDate.toUTCString()}`)
   })
 
-  // user reqests list of tasks
   socket.on('taskData', function () {
     io.sockets.connected[socket.id].emit('taskList', tasks)
   })
 
   // confirmation queue things
-  socket.on('reqConfirmTask', function () {
-    io.sockets.connected[socket.id].emit('getConfirmTask', [confirmationQueue[0] === null, confirmationQueue[0]])
+  socket.on('reqConfirmTask', function (username) {
+    if (confirmationQueue[0] != null) {
+      // test if the user who submitted the task is the user trying to confirm it
+      var i = 0
+      var nextAvailItem = confirmationQueue[i]
+      while (i <= confirmationQueue.length && nextAvailItem[0] === username) {
+        nextAvailItem = confirmationQueue[i]
+        i++
+      }
+      if (i > confirmationQueue.length || confirmationQueue[0] === null || nextAvailItem[0] === username) {
+        io.sockets.connected[socket.id].emit('getConfirmTask', [true, null])
+      } else {
+        io.sockets.connected[socket.id].emit('getConfirmTask', [confirmationQueue[0] == null, confirmationQueue[0]])
+      }
+    } else io.sockets.connected[socket.id].emit('getConfirmTask', [true, null])
   })
 
-  socket.on('posConfirmTask', function (queueID) {
-    if (confirmationQueue[0][5] === queueID) console.log(confirmationQueue.pop())
-    console.log(confirmationQueue)
+  socket.on('posConfirmTask', function (data) {
+    var queueID = data[0]
+    var username = data[1]
+    if (confirmationQueue[0][5] === queueID) confirmationQueue.shift()
+    console.log(`A task was confirmed by ${username}`)
+  })
+
+  socket.on('negConfirmTask', function (data) {
+    var queueID = data[0]
+    var username = data[1]
+    if (confirmationQueue[0][5] === queueID) {
+      score[confirmationQueue[0][0]] -= Number(confirmationQueue[0][2])
+      scoreUpdate()
+      burntTasks.push(confirmationQueue.shift())
+      console.log(`TASK DELETED: ${username} deleted a task with id ${queueID}.`)
+      console.log('This task was removed from the queue and added to a list of burnt tasks.')
+    } else console.log('Task to be burned was not the next task. No tasks have been removed.')
   })
 })
 
@@ -123,18 +152,21 @@ function scoreUpdate (username, addedpoints) {
     score[username] = score[username] ? score[username] + Number(addedpoints) : Number(addedpoints)
   }
   io.emit('scoreUpdate', score)
+  var tempHighscore = 0
+  var tempUser = ''
   for (var user in score) {
-    if (score[user] > Number(highestScore[1])) {
-      highestScore[1] = score[user]
-      highestScore[0] = user
+    if (score[user] > tempHighscore) {
+      tempHighscore = score[user]
+      tempUser = user
     }
   }
+  highestScore[1] = tempHighscore
+  highestScore[0] = tempUser
   io.emit('highestScore', highestScore)
 }
 
-// load tasks from CSV into array
 function loadTasks () {
-  fs.createReadStream('tasks.csv') // file name
+  fs.createReadStream('tasks.csv')
     .pipe(csv())
     .on('data', function (data) {
       if (data[0] !== 'taskName') { // ignoring the first line (with titles)
@@ -147,17 +179,19 @@ function loadTasks () {
     })
 }
 
-// load user score data from CSV into array
 function loadScoreData () {
-  fs.createReadStream('scoreData.txt') // file name
-    .pipe(csv())
-    .on('data', function (data) {
-      if (data[0] !== 'username') { // ignoring the first line (with titles)
-        // take third item (id) and use as key. Then, set data to be point worth and friendly name
-        score[data[0]] = Number(data[1])
-      }
-    })
-    .on('end', function (data) {
-      console.log('START: Read score.')
-    })
+  if (fs.existsSync('scoreData.txt')) {
+    fs.createReadStream('scoreData.txt')
+      .pipe(csv())
+      .on('data', function (data) {
+        if (data[0] !== 'username') {
+          score[data[0]] = Number(data[1])
+        }
+      })
+      .on('end', function (data) {
+        console.log('START: Read score.')
+      })
+  } else {
+    console.log('START: No score data to read.')
+  }
 }

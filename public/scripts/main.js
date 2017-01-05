@@ -12,7 +12,6 @@ function load () {
       username = username.substring(0, 4)
       document.getElementById(username).className += ' selected'
     } else {
-      // console.log('User not on scoreboard, displaying alt score')
       document.getElementById('alt').className += ' selected'
     }
     socket.emit('auth', username)
@@ -21,7 +20,6 @@ function load () {
   socket.emit('taskData')
 
   socket.on('taskList', function (tasks) {
-    // console.log('Received task list from server')
     localStorage.setItem('taskData', JSON.stringify(tasks))
   })
 
@@ -36,7 +34,6 @@ function load () {
       // if user is current user, also update their userTotalScore
       // and set the alt display to their data
       if (user === currentUser) {
-        // console.log('Score update. Updating current user\'s score and setting alt info to their data.')
         capitalisedUser = currentUser.charAt(0).toUpperCase() + currentUser.slice(1)
         localStorage.userTotalScore = scores[user]
         document.getElementById('alt').innerHTML = capitalisedUser + ': ' + scores[user] + ' &#x1F31F'
@@ -85,37 +82,35 @@ function signOut () {
 
 // CONFIRMATION SECTION
 function initConfirm () { // eslint-disable-line no-unused-vars
-  socket.emit('reqConfirmTask')
-  console.log('Requested confirmation task')
-
+  var username = getCookie('username')
+  socket.emit('reqConfirmTask', username)
   socket.on('getConfirmTask', function (data) {
     // data[0] confirms that the list is not empty
     // data[1] is the task info
     var taskData = data[1]
     if (!data[0]) {
-      var queueID = data[5]
-      console.log(`Got confirmation task with id ${queueID}`)
       document.getElementById('queue_user').innerHTML = taskData[0].charAt(0).toUpperCase() + taskData[0].slice(1)
       document.getElementById('queue_task').innerHTML = JSON.parse(localStorage.taskData)[taskData[1]][1].toLowerCase() // should access local storage at key 'taskname', grab task proper name
       localStorage.confirmationData = taskData
     } else {
-      document.getElementsByClassName('contentHeader').innerHTML = 'Sorry, there are no chores in the confirmation queue right now!'
-      document.getElementsByClassName('claimBody').style.display = 'none'
+      document.getElementById('contentHeader').innerHTML = 'Sorry, there are no chores in the confirmation queue right now!'
+      document.getElementById('claimBodyHide').style.display = 'none'
     }
   })
 }
 
 function confirmYes () { // eslint-disable-line no-unused-vars
-  socket.emit('posConfirmTask', localStorage.confirmationData.split(',')[5])
-  alert('Right on! Task confirmed to happen. Purging from queue.')
+  var username = getCookie('username')
+  socket.emit('posConfirmTask', [localStorage.confirmationData.split(',')[5], username])
+  // alert('Right on! Task confirmed to happen. Purging from queue.')
+  window.location.href = '/public/claimed_positive.html'
 }
 
 function confirmNo () { // eslint-disable-line no-unused-vars
-  socket.emit('negConfirmTask', localStorage.confirmationData.split(',')[5])
-  alert('Oh no! Task confirmed to not happen :(')
+  var username = getCookie('username')
+  socket.emit('negConfirmTask', [localStorage.confirmationData.split(',')[5], username])
+  window.location.href = '/public/claimed_negative.html'
 }
-
-// OTHER SHIT LATER
 
 function claimed () {
   // user claimed points on last page. Here, update with live view of how many
