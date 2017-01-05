@@ -1,4 +1,4 @@
-**Roomate Chore Tracker**
+**Roommate Chore Tracker**
 
 Yeah so my roommates and I don't do all the chores we should do. I'm working on making this gamified system as a way to encourage that.
 
