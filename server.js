@@ -106,9 +106,17 @@ io.on('connection', function (socket) {
     io.sockets.connected[socket.id].emit('taskList', tasks)
   })
 
-  socket.on('reqConfirmTask', function() {
-    io.sockets.connected[socket.id].emit('getConfirmTask', confirmationQueue[0])
+  // confirmation queue things
+
+  socket.on('reqConfirmTask', function () {
+    io.sockets.connected[socket.id].emit('getConfirmTask', [confirmationQueue[0] === null, confirmationQueue[0]])
   })
+
+  socket.on('posConfirmTask', function (queueID) {
+    if (confirmationQueue[0][5] === queueID) console.log(confirmationQueue.pop())
+    console.log(confirmationQueue)
+  })
+
 })
 
 // functions that will get called because of users. Either
