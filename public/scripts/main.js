@@ -3,7 +3,7 @@
 /* eslint-env browser */
 
 function load () {
-  var currentUser = signIn(function (username) {
+  var currentUser = signIn(function (username) { // eslint-disable-line no-unused-vars
     // if user is on scoreboard, set them as selected
     // in the future, this should read from userScores or something.
     if (username === 'phil' || username === 'ross' || username === 'karl') {
@@ -83,8 +83,8 @@ function signOut () {
   location.reload()
 }
 
-//// CONFIRMATION SECTION
-function initConfirm () {
+// CONFIRMATION SECTION
+function initConfirm () { // eslint-disable-line no-unused-vars
   socket.emit('reqConfirmTask')
   console.log('Requested confirmation task')
 
@@ -93,29 +93,29 @@ function initConfirm () {
     // data[1] is the task info
     var taskData = data[1]
     if (!data[0]) {
-      console.log(`Got confirmation task with id ${data[5]}`)
       var queueID = data[5]
+      console.log(`Got confirmation task with id ${queueID}`)
       document.getElementById('queue_user').innerHTML = taskData[0].charAt(0).toUpperCase() + taskData[0].slice(1)
       document.getElementById('queue_task').innerHTML = JSON.parse(localStorage.taskData)[taskData[1]][1].toLowerCase() // should access local storage at key 'taskname', grab task proper name
       localStorage.confirmationData = taskData
     } else {
       document.getElementsByClassName('contentHeader').innerHTML = 'Sorry, there are no chores in the confirmation queue right now!'
-      document.getElementsByClassName('claimBody').style.display = none
+      document.getElementsByClassName('claimBody').style.display = 'none'
     }
-   })
+  })
 }
 
-function confirmYes () {
+function confirmYes () { // eslint-disable-line no-unused-vars
   socket.emit('posConfirmTask', localStorage.confirmationData.split(',')[5])
   alert('Right on! Task confirmed to happen. Purging from queue.')
 }
 
-function confirmNo () {
+function confirmNo () { // eslint-disable-line no-unused-vars
   socket.emit('negConfirmTask', localStorage.confirmationData.split(',')[5])
   alert('Oh no! Task confirmed to not happen :(')
 }
 
-//// OTHER SHIT LATER
+// OTHER SHIT LATER
 
 function claimed () {
   // user claimed points on last page. Here, update with live view of how many

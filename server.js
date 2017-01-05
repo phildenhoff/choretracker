@@ -50,13 +50,13 @@ loadScoreData()
 scoreUpdate()
 
 // to do:
-// track which user is using which socket id
-// every item that is claimed is added to a queue, with date/time, action, user, value
-// scores are periodically written to a file on disk
-// when user submits score, all scores updated
-// accept claims
-// wipe scores remaing in queue on a certain day
+// send oldest claim to user who goes to 'claim' page. Only remove from queue once answer is supplied
+// claims can be confirmed/denied
+// wipe scores remaing in queue on a certain day and remove scores from userscore
+// give monthly stats of who is highest
+// highschol
 //
+// change layout from many HTML pages to one react pages
 
 io.on('connection', function (socket) {
   if (VERBOSE) console.log(socket.id + ' connected')
@@ -79,26 +79,22 @@ io.on('connection', function (socket) {
   socket.on('claim', function (data) {
     // data will come array in form:
     // [username:<username>, task:<taskName>]
+
     var submitDate = new Date()
-    console.log('Date submitted: ', submitDate.toUTCString())
-
+    // expires exactly 30 days (in ms) later
     var expiryDate = new Date(submitDate.getTime() + 2592000000)
-    console.log('Expiry date: ', expiryDate.toUTCString())
 
-    // console.log(data)
     data = data.split(';')
     data[0] = data[0].split(':')
     var taskID = data[1].split(':')[1] // <-- this is task
     var taskWorth = tasks[taskID][0] // <-- this is the task worth
     var queueID = uuid.v1() // unique identifier
-    // console.log('task worth: ' + taskWorth)
     scoreUpdate(data[0][1], taskWorth)
-    // console.log(score)
 
     // should push username, taskname, point worth at time of adding, time + date submitted to queue, expiry date
     confirmationQueue.push([data[0][1], taskID, taskWorth, submitDate.getTime(), expiryDate.getTime(), queueID])
-    // console.log(confirmationQueue.shift())
-    console.log('TASK: ', `${data[0][1]} did ${taskID} for ${taskWorth} point(s) on ${submitDate}. It will expire ${expiryDate}`)
+
+    console.log('TASK: ', `${data[0][1]}, ${taskID}, ${taskWorth} point,  on ${submitDate.toUTCString()}, expires ${expiryDate.toUTCString()}`)
   })
 
   // user reqests list of tasks
@@ -107,7 +103,6 @@ io.on('connection', function (socket) {
   })
 
   // confirmation queue things
-
   socket.on('reqConfirmTask', function () {
     io.sockets.connected[socket.id].emit('getConfirmTask', [confirmationQueue[0] === null, confirmationQueue[0]])
   })
@@ -116,7 +111,6 @@ io.on('connection', function (socket) {
     if (confirmationQueue[0][5] === queueID) console.log(confirmationQueue.pop())
     console.log(confirmationQueue)
   })
-
 })
 
 // functions that will get called because of users. Either
@@ -140,7 +134,7 @@ function scoreUpdate (username, addedpoints) {
 
 // load tasks from CSV into array
 function loadTasks () {
-  fs.createReadStream('tasks.csv')
+  fs.createReadStream('tasks.csv') // file name
     .pipe(csv())
     .on('data', function (data) {
       if (data[0] !== 'taskName') { // ignoring the first line (with titles)
