@@ -26,6 +26,12 @@ a {
 	color:inherit;
 }
 
+h1 {
+    font-weight: normal;
+    -webkit-margin-before: 0px;
+    -webkit-margin-after: 0px;
+}
+
 /* Color style
  * from https://color.adobe.com/Flat-UI-color-theme-2469224/
  * #2C3E50 | #E74C3C | #ECF0F1 | #3498DB | #2980B9
