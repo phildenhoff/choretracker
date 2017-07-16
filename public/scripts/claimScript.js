@@ -65,7 +65,7 @@ function submitClaim () {
   // if user total score DNE, set to 0 then add what user just got
   if (localStorage.userTotalScore == null) localStorage.userTotalScore = 0
   localStorage.userTotalScore = Number(localStorage.userTotalScore) + Number(pointWorth)
-  window.location.href = '/public/claimed.html'
+  window.location.href = '/claimed'
 }
 
 function getCookie (cname) {

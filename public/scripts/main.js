@@ -87,6 +87,7 @@ function initConfirm () { // eslint-disable-line no-unused-vars
   socket.on('getConfirmTask', function (data) {
     // data[0] confirms that the list is not empty
     // data[1] is the task info
+    console.log(data)
     var taskData = data[1]
     if (!data[0]) {
       document.getElementById('queue_user').innerHTML = taskData[0].charAt(0).toUpperCase() + taskData[0].slice(1)
@@ -103,13 +104,13 @@ function confirmYes () { // eslint-disable-line no-unused-vars
   var username = getCookie('username')
   socket.emit('posConfirmTask', [localStorage.confirmationData.split(',')[5], username])
   // alert('Right on! Task confirmed to happen. Purging from queue.')
-  window.location.href = '/public/confimed_positive.html'
+  window.location.href = './confirmed_positive.html'
 }
 
 function confirmNo () { // eslint-disable-line no-unused-vars
   var username = getCookie('username')
   socket.emit('negConfirmTask', [localStorage.confirmationData.split(',')[5], username])
-  window.location.href = '/public/confimed_negative.html'
+  window.location.href = './confirmed_negative.html'
 }
 
 function claimed () {

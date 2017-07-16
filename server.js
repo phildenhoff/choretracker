@@ -32,10 +32,30 @@ if (HELP) {
     process.exit()
 }
 
-app.get('/*', function (req, res) {
+// Express Routing \\
+app.use(express.static(path.join(__dirname, '/public')))
+
+app.get('/admin', function (req, res) {
+    res.sendFile(path.join(__dirname, '/public/admin.html'))
+})
+app.get('/claim', function (req, res) {
+    res.sendFile(path.join(__dirname, '/public/claim.html'))
+})
+app.get('/claimed', function (req, res) {
+    res.sendFile(path.join(__dirname, '/public/claimed.html'))
+})
+app.get('/confirm', function (req, res) {
+    res.sendFile(path.join(__dirname, '/public/confirm.html'))
+})
+app.get('/confirmed_negative', function (req, res) {
+    res.sendFile(path.join(__dirname, '/public/confirmed_negative.html'))
+})
+app.get('/confirmed_positive', function (req, res) {
+    res.sendFile(path.join(__dirname, '/public/confirmed_positive.html'))
+})
+app.get('/', function (req, res) {
   // send the index.html file for all requests
   res.sendFile(path.join(__dirname, '/public/index.html'))
-  app.use('/public', express.static(path.join(__dirname, '/public')))
 })
 
 http.listen(3001, function () {
