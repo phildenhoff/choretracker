@@ -32,7 +32,7 @@ if (HELP) {
     process.exit()
 }
 
-app.get('/', function (req, res) {
+app.get('/*', function (req, res) {
   // send the index.html file for all requests
   res.sendFile(path.join(__dirname, '/public/index.html'))
   app.use('/public', express.static(path.join(__dirname, '/public')))
