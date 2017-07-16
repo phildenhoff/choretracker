@@ -103,13 +103,13 @@ function confirmYes () { // eslint-disable-line no-unused-vars
   var username = getCookie('username')
   socket.emit('posConfirmTask', [localStorage.confirmationData.split(',')[5], username])
   // alert('Right on! Task confirmed to happen. Purging from queue.')
-  window.location.href = '/public/claimed_positive.html'
+  window.location.href = '/public/confimed_positive.html'
 }
 
 function confirmNo () { // eslint-disable-line no-unused-vars
   var username = getCookie('username')
   socket.emit('negConfirmTask', [localStorage.confirmationData.split(',')[5], username])
-  window.location.href = '/public/claimed_negative.html'
+  window.location.href = '/public/confimed_negative.html'
 }
 
 function claimed () {
