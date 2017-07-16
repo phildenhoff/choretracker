@@ -21,7 +21,16 @@ var confirmationQueue = []
 var burntTasks = []
 
 // SETTINGS \\
-var VERBOSE = false
+args = process.argv.slice(2) // remove node path and file path from args
+var VERBOSE = (args.indexOf("-v") > -1) ? true : false // check if verbose flag is set
+var HELP = (args.indexOf("-h") > -1) || (args.indexOf("help") > -1) ? true : false // check if help
+                                                                                   // flag is set
+if (HELP) {
+    console.log("Usage: node server.js [-v] \n\
+    -v: verbose mode logs excess information \n\
+    -h, help: show this message")
+    process.exit()
+}
 
 app.get('/', function (req, res) {
   // send the index.html file for all requests
