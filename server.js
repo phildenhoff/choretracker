@@ -174,13 +174,6 @@ io.on('connection', function (socket) {
             console.log('This task was removed from the queue and added to a list of burnt tasks.')
         } else if (VERBOSE) console.log("No match on " + confirmationQueue[i] + " with " + queueID)
     }
-  //   if (confirmationQueue[0][5] === queueID) {
-  //     score[confirmationQueue[0][0]] -= Number(confirmationQueue[0][2])
-  //     scoreUpdate()
-  //     burntTasks.push(confirmationQueue.shift())
-  //     console.log(`TASK DELETED: ${username} deleted a task with id ${queueID}.`)
-  //     console.log('This task was removed from the queue and added to a list of burnt tasks.')
-  // } else console.log('Task to be burned was not the next task. No tasks have been removed.')
   })
 })
 
