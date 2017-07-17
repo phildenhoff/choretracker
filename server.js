@@ -33,6 +33,7 @@ if (HELP) {
 }
 
 // Express Routing \\
+// TODO: These really should be in separate files...
 app.use(express.static(path.join(__dirname, '/public')))
 
 app.get('/admin', function (req, res) {
@@ -89,13 +90,12 @@ loadTasks()
 loadScoreData()
 scoreUpdate()
 
-// to do:
+// TODO:
 // send oldest claim to user who goes to 'claim' page. Only remove from queue once answer is supplied
 // claims can be confirmed/denied
 // wipe scores remaing in queue on a certain day and remove scores from userscore
 // give monthly stats of who is highest scoring
 //
-// change layout from many HTML pages to one react pages
 
 io.on('connection', function (socket) {
   if (VERBOSE) console.log(socket.id + ' connected')
@@ -135,20 +135,26 @@ io.on('connection', function (socket) {
 
   // confirmation queue things
   socket.on('reqConfirmTask', function (username) {
-    if (confirmationQueue[0] != null) {
-      // test if the user who submitted the task is the user trying to confirm it
-      var i = 0
-      var nextAvailItem = confirmationQueue[i]
-      while (i <= confirmationQueue.length && nextAvailItem[0] === username) {
-        nextAvailItem = confirmationQueue[i]
-        i++
-      }
-      if (i > confirmationQueue.length || confirmationQueue[0] === null || nextAvailItem[0] === username) {
-        io.sockets.connected[socket.id].emit('getConfirmTask', [true, null])
-      } else {
-        io.sockets.connected[socket.id].emit('getConfirmTask', [confirmationQueue[0] == null, confirmationQueue[0]])
-      }
-    } else io.sockets.connected[socket.id].emit('getConfirmTask', [true, null])
+      // If confimation queue is empty, return [true, null] stating there are no available jobs to do
+      // For each item in the queue:
+        // if it was made by the requester, skip it
+        // if it was made by someone other than the requester, submit a object for confirmationQueue and break
+        // if the list is completely run through and nothing is found, return [true, null]
+        console.log(confirmationQueue)
+        if (confirmationQueue && confirmationQueue.length) {
+            for (var i = 0; i < confirmationQueue.length; i++) {
+                if (confirmationQueue[i][0] === username) {
+                    continue // postition in queue is task from user asking to confirm
+                } else
+                    console.log(confirmationQueue[i][0] === username, confirmationQueue[i][0], username);
+                    io.sockets.connected[socket.id].emit('getConfirmTask', confirmationQueue[i])
+                    return // task is not from user
+                }
+            }
+            io.sockets.connected[socket.id].emit('getConfirmTask', null) // if we got to this point, all items in the queue were from the requester
+        } else {
+            io.sockets.connected[socket.id].emit('getConfirmTask', null) // confirmationQueue is empty, return empty object
+        }
   })
 
   socket.on('posConfirmTask', function (data) {

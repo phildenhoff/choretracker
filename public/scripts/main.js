@@ -84,12 +84,8 @@ function signOut () {
 function initConfirm () { // eslint-disable-line no-unused-vars
   var username = getCookie('username')
   socket.emit('reqConfirmTask', username)
-  socket.on('getConfirmTask', function (data) {
-    // data[0] confirms that the list is not empty
-    // data[1] is the task info
-    console.log(data)
-    var taskData = data[1]
-    if (!data[0]) {
+  socket.on('getConfirmTask', function (taskData) {
+    if (taskData) {
       document.getElementById('queue_user').innerHTML = taskData[0].charAt(0).toUpperCase() + taskData[0].slice(1)
       document.getElementById('queue_task').innerHTML = JSON.parse(localStorage.taskData)[taskData[1]][1].toLowerCase() // should access local storage at key 'taskname', grab task proper name
       localStorage.confirmationData = taskData
@@ -103,7 +99,6 @@ function initConfirm () { // eslint-disable-line no-unused-vars
 function confirmYes () { // eslint-disable-line no-unused-vars
   var username = getCookie('username')
   socket.emit('posConfirmTask', [localStorage.confirmationData.split(',')[5], username])
-  // alert('Right on! Task confirmed to happen. Purging from queue.')
   window.location.href = './confirmed_positive.html'
 }
 
