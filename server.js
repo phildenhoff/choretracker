@@ -140,13 +140,11 @@ io.on('connection', function (socket) {
         // if it was made by the requester, skip it
         // if it was made by someone other than the requester, submit a object for confirmationQueue and break
         // if the list is completely run through and nothing is found, return [true, null]
-        console.log(confirmationQueue)
         if (confirmationQueue && confirmationQueue.length) {
             for (var i = 0; i < confirmationQueue.length; i++) {
                 if (confirmationQueue[i][0] === username) {
                     continue // postition in queue is task from user asking to confirm
-                } else
-                    console.log(confirmationQueue[i][0] === username, confirmationQueue[i][0], username);
+                } else {
                     io.sockets.connected[socket.id].emit('getConfirmTask', confirmationQueue[i])
                     return // task is not from user
                 }
@@ -167,13 +165,22 @@ io.on('connection', function (socket) {
   socket.on('negConfirmTask', function (data) {
     var queueID = data[0]
     var username = data[1]
-    if (confirmationQueue[0][5] === queueID) {
-      score[confirmationQueue[0][0]] -= Number(confirmationQueue[0][2])
-      scoreUpdate()
-      burntTasks.push(confirmationQueue.shift())
-      console.log(`TASK DELETED: ${username} deleted a task with id ${queueID}.`)
-      console.log('This task was removed from the queue and added to a list of burnt tasks.')
-    } else console.log('Task to be burned was not the next task. No tasks have been removed.')
+    for (var i = 0; i < confirmationQueue.length; i++) {
+        if (confirmationQueue[i][5] === queueID) {
+            score[confirmationQueue[i][0]] -= Number(confirmationQueue[i][2])
+            scoreUpdate()
+            burntTasks.push(confirmationQueue.splice(i,1));
+            console.log(`TASK DELETED: ${username} deleted a task with id ${queueID}.`)
+            console.log('This task was removed from the queue and added to a list of burnt tasks.')
+        } else if (VERBOSE) console.log("No match on " + confirmationQueue[i] + " with " + queueID)
+    }
+  //   if (confirmationQueue[0][5] === queueID) {
+  //     score[confirmationQueue[0][0]] -= Number(confirmationQueue[0][2])
+  //     scoreUpdate()
+  //     burntTasks.push(confirmationQueue.shift())
+  //     console.log(`TASK DELETED: ${username} deleted a task with id ${queueID}.`)
+  //     console.log('This task was removed from the queue and added to a list of burnt tasks.')
+  // } else console.log('Task to be burned was not the next task. No tasks have been removed.')
   })
 })
 
