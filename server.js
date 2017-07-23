@@ -21,15 +21,14 @@ var confirmationQueue = []
 var burntTasks = []
 
 // SETTINGS \\
+var args = args
 args = process.argv.slice(2) // remove node path and file path from args
-var VERBOSE = (args.indexOf("-v") > -1) ? true : false // check if verbose flag is set
-var HELP = (args.indexOf("-h") > -1) || (args.indexOf("help") > -1) ? true : false // check if help
+var VERBOSE = (args.indexOf('-v') > -1) // check if verbose flag is set
+var HELP = (args.indexOf('-h') > -1) || (args.indexOf('help') > -1) // check if help
                                                                                    // flag is set
 if (HELP) {
-    console.log("Usage: node server.js [-v] \n\
-    -v: verbose mode logs excess information \n\
-    -h, help: show this message")
-    process.exit()
+  console.log('Usage: node server.js [-v] \n -v: verbose mode logs excess information \n -h, help: show this message')
+  process.exit()
 }
 
 // Express Routing \\
@@ -37,22 +36,22 @@ if (HELP) {
 app.use(express.static(path.join(__dirname, '/public')))
 
 app.get('/admin', function (req, res) {
-    res.sendFile(path.join(__dirname, '/public/admin.html'))
+  res.sendFile(path.join(__dirname, '/public/admin.html'))
 })
 app.get('/claim', function (req, res) {
-    res.sendFile(path.join(__dirname, '/public/claim.html'))
+  res.sendFile(path.join(__dirname, '/public/claim.html'))
 })
 app.get('/claimed', function (req, res) {
-    res.sendFile(path.join(__dirname, '/public/claimed.html'))
+  res.sendFile(path.join(__dirname, '/public/claimed.html'))
 })
 app.get('/confirm', function (req, res) {
-    res.sendFile(path.join(__dirname, '/public/confirm.html'))
+  res.sendFile(path.join(__dirname, '/public/confirm.html'))
 })
 app.get('/confirmed_negative', function (req, res) {
-    res.sendFile(path.join(__dirname, '/public/confirmed_negative.html'))
+  res.sendFile(path.join(__dirname, '/public/confirmed_negative.html'))
 })
 app.get('/confirmed_positive', function (req, res) {
-    res.sendFile(path.join(__dirname, '/public/confirmed_positive.html'))
+  res.sendFile(path.join(__dirname, '/public/confirmed_positive.html'))
 })
 app.get('/', function (req, res) {
   // send the index.html file for all requests
@@ -101,7 +100,10 @@ io.on('connection', function (socket) {
   if (VERBOSE) console.log(socket.id + ' connected')
 
     // why the fuck is this here if it does nothing?
-  socket.on('connect', function () {
+  socket.on('connect', function (auth) {
+    if (!auth) {
+      console.log('Not authorized.')
+    }
   })
 
   socket.on('auth', function (username) {
@@ -135,24 +137,24 @@ io.on('connection', function (socket) {
 
   // confirmation queue things
   socket.on('reqConfirmTask', function (username) {
-      // If confimation queue is empty, return [true, null] stating there are no available jobs to do
-      // For each item in the queue:
-        // if it was made by the requester, skip it
-        // if it was made by someone other than the requester, submit a object for confirmationQueue and break
-        // if the list is completely run through and nothing is found, return [true, null]
-        if (confirmationQueue && confirmationQueue.length) {
-            for (var i = 0; i < confirmationQueue.length; i++) {
-                if (confirmationQueue[i][0] === username) {
-                    continue // postition in queue is task from user asking to confirm
-                } else {
-                    io.sockets.connected[socket.id].emit('getConfirmTask', confirmationQueue[i])
-                    return // task is not from user
-                }
-            }
-            io.sockets.connected[socket.id].emit('getConfirmTask', null) // if we got to this point, all items in the queue were from the requester
+    // If confimation queue is empty, return [true, null] stating there are no available jobs to do
+    // For each item in the queue:
+    // if it was made by the requester, skip it
+    // if it was made by someone other than the requester, submit a object for confirmationQueue and break
+    // if the list is completely run through and nothing is found, return [true, null]
+    if (confirmationQueue && confirmationQueue.length) {
+      for (var i = 0; i < confirmationQueue.length; i++) {
+        if (confirmationQueue[i][0] === username) {
+          continue // postition in queue is task from user asking to confirm
         } else {
-            io.sockets.connected[socket.id].emit('getConfirmTask', null) // confirmationQueue is empty, return empty object
+          io.sockets.connected[socket.id].emit('getConfirmTask', confirmationQueue[i])
+          return // task is not from user
         }
+      }
+      io.sockets.connected[socket.id].emit('getConfirmTask', null) // if we got to this point, all items in the queue were from the requester
+    } else {
+      io.sockets.connected[socket.id].emit('getConfirmTask', null) // confirmationQueue is empty, return empty object
+    }
   })
 
   socket.on('posConfirmTask', function (data) {
@@ -166,13 +168,13 @@ io.on('connection', function (socket) {
     var queueID = data[0]
     var username = data[1]
     for (var i = 0; i < confirmationQueue.length; i++) {
-        if (confirmationQueue[i][5] === queueID) {
-            score[confirmationQueue[i][0]] -= Number(confirmationQueue[i][2])
-            scoreUpdate()
-            burntTasks.push(confirmationQueue.splice(i,1));
-            console.log(`TASK DELETED: ${username} deleted a task with id ${queueID}.`)
-            console.log('This task was removed from the queue and added to a list of burnt tasks.')
-        } else if (VERBOSE) console.log("No match on " + confirmationQueue[i] + " with " + queueID)
+      if (confirmationQueue[i][5] === queueID) {
+        score[confirmationQueue[i][0]] -= Number(confirmationQueue[i][2])
+        scoreUpdate()
+        burntTasks.push(confirmationQueue.splice(i, 1))
+        console.log(`TASK DELETED: ${username} deleted a task with id ${queueID}.`)
+        console.log('This task was removed from the queue and added to a list of burnt tasks.')
+      } else if (VERBOSE) console.log('No match on ' + confirmationQueue[i] + ' with ' + queueID)
     }
   })
 })

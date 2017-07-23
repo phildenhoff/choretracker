@@ -1,7 +1,9 @@
 {
   "dependencies": {
     "express": "^4.14.0",
-    "socket.io": "^1.6.0"
+    "socket.io": "^1.6.0",
+    "node-uuid": "^1.4.8",
+    "fast-csv": "^2.4.0"
   },
   "devDependencies": {
     "eslint": "^3.11.1",
