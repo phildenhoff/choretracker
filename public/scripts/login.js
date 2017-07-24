@@ -37,7 +37,18 @@ function processForm (e) {
   socket.on('resolveAuth', function (data) {
     if (data) {
       localStorage.setItem('authToken', data)
-      window.location.replace('/')
+      if (navigator.credentials) {
+        var cred = new PasswordCredential({
+          id: username,
+          password: password,
+          name: name
+        })
+        navigator.credentials.store(cred).then(function () {
+          window.location.replace('/')
+        })
+      } else {
+        window.location.replace('/')
+      }
     } else {
       console.error(data)
       loginError()
