@@ -228,3 +228,70 @@ h1 {
   vertical-align: middle;
   height: 36px;
 }
+
+/*
+*
+*  Login Page
+*
+*/
+
+.fadeOut {
+  transition: opacity .2s ease-in;
+}
+
+ .content form#login-form{
+   width: 33vw;
+   top: 20vw;
+   left: 33vw;
+   position: absolute;
+ }
+
+ .content .login input {
+   background-color: #efefef;
+   padding: 10px;
+   border: none;
+   width: 100%;
+   margin: 0px 10px 2vh 10px;
+   outline: none!important;
+   border-radius: 5px;
+   margin-top: 5px;
+ }
+
+ .login label {
+   text-align: left;
+ }
+
+ .login .btn {
+   line-height: 5vh;
+   display: inline-block;
+   width: 33%;
+   height: auto;
+   position: relative;
+   left: 33%;
+   margin-top: 5px;
+   box-shadow: 4px 5px 15px 0 rgba(0,0,0,.22);
+   border-radius: 10px;
+   cursor: pointer;
+   outline: none;
+   border: none;
+   background-color: #3498DB;
+   color: #fff;
+ }
+
+ .login .btn:hover {
+   background-color: #2E87C2;
+ }
+
+ .login .btn:active {
+   background-color: #2a6790;
+ }
+
+ .warning {
+   text-align: center;
+   top: 75vh;
+   position: relative;
+ }
+
+ .emphasize {
+   font-style: italic;
+ }

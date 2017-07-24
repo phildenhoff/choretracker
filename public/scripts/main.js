@@ -3,6 +3,8 @@
 /* eslint-env browser */
 
 function load () {
+  console.log(localStorage.getItem('authToken'))
+
   var currentUser = signIn(function (username) { // eslint-disable-line no-unused-vars
     // if user is on scoreboard, set them as selected
     // in the future, this should read from userScores or something.

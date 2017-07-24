@@ -14,6 +14,12 @@ var csv = require('fast-csv') // used to parse CSV
 
 // DATA \\
 var users = []
+var authorizedUsers = {
+  'phil': {
+    password: 'password',
+    token: undefined
+  }
+}
 var score = {karl: 0, phil: 0, ross: 0}
 var highestScore = ['no one', 0]
 var tasks = {}
@@ -35,10 +41,21 @@ if (HELP) {
 // TODO: These really should be in separate files...
 app.use(express.static(path.join(__dirname, '/public')))
 
+var myLogger = function (req, res, next) {
+  if (req) {
+    console.log(req.user)
+  } else {
+    console.log('No req.user!')
+    res.redirect('/login')
+  }
+  console.log('Client going to ', req.route.path)
+  next()
+}
+
 app.get('/admin', function (req, res) {
   res.sendFile(path.join(__dirname, '/public/admin.html'))
 })
-app.get('/claim', function (req, res) {
+app.get('/claim', myLogger, function (req, res) {
   res.sendFile(path.join(__dirname, '/public/claim.html'))
 })
 app.get('/claimed', function (req, res) {
@@ -53,10 +70,18 @@ app.get('/confirmed_negative', function (req, res) {
 app.get('/confirmed_positive', function (req, res) {
   res.sendFile(path.join(__dirname, '/public/confirmed_positive.html'))
 })
-app.get('/', function (req, res) {
-  // send the index.html file for all requests
+app.get('/login', function (req, res) {
+  res.sendFile(path.join(__dirname, '/public/login.html'))
+})
+
+app.get('/', myLogger, function (req, res, next) {
   res.sendFile(path.join(__dirname, '/public/index.html'))
 })
+
+// app.get('/', function (req, res) {
+//   // send the index.html file for all requests
+//   res.sendFile(path.join(__dirname, '/public/index.html'))
+// })
 
 http.listen(3001, function () {
   if (VERBOSE) console.log('listening on *:3001')
@@ -175,6 +200,18 @@ io.on('connection', function (socket) {
         console.log(`TASK DELETED: ${username} deleted a task with id ${queueID}.`)
         console.log('This task was removed from the queue and added to a list of burnt tasks.')
       } else if (VERBOSE) console.log('No match on ' + confirmationQueue[i] + ' with ' + queueID)
+    }
+  })
+
+  // Authorise incoming clients username / password combo.
+  socket.on('authorizeClient', function (testCredentials) {
+    console.log(testCredentials.username, testCredentials.password)
+    if (authorizedUsers[testCredentials.username] && authorizedUsers[testCredentials.username].password === testCredentials.password) {
+      console.log('User is authorized for access.')
+      authorizedUsers[testCredentials.username].token = uuid.v1()
+      io.sockets.connected[socket.id].emit('resolveAuth', authorizedUsers[testCredentials.username].token)
+    } else {
+      io.sockets.connected[socket.id].emit('resolveAuth', false)
     }
   })
 })

@@ -1,0 +1,37 @@
+<html>
+	<head>
+		<link rel='stylesheet' type='text/css' href='./style.css'>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title> golden_stars_r_us</title>
+	</head>
+
+	<body>
+		<div class='content'>
+			<span id='userLeadScore' class='fadeOut'>
+				Login to claim and confirm points for chores.
+			</span>
+			<div class='login'>
+				<form id='login-form' class='fadeOut'>
+					<label>Username</label>
+					<input id='username' type='text' placeholder="CallMeBigPoppa" name='uname' required />
+					<label>Password</label>
+					<input id='password' type='password' placeholder='hunter2' name='password' required />
+
+					<button type='submit' class='btn'>Login</button>
+				</form>
+
+				<p class='warning'>
+					This page is <span class='emphasize'>not</span> secure. <br / />
+					Your credentials are sent and stored in plaintext.
+				</p>
+			</div>
+
+			<script src="/socket.io/socket.io.js"></script>
+			<script src="./scripts/login.js"></script>
+			<script>
+    		var socket = io();
+  		</script>
+		</div>
+
+	</body>
+</html>
