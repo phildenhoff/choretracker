@@ -17,7 +17,18 @@ var users = []
 var authorizedUsers = {
   'phil': {
     password: 'password',
-    token: undefined
+    token: undefined,
+    socketID: undefined
+  },
+  'karl': {
+    password: 'password',
+    token: undefined,
+    socketID: undefined
+  },
+  'callmebigpoppa': {
+    password: 'hunter2',
+    token: undefined,
+    socketID: undefined
   }
 }
 var score = {karl: 0, phil: 0, ross: 0}
@@ -41,21 +52,10 @@ if (HELP) {
 // TODO: These really should be in separate files...
 app.use(express.static(path.join(__dirname, '/public')))
 
-var myLogger = function (req, res, next) {
-  if (req) {
-    console.log(req.user)
-  } else {
-    console.log('No req.user!')
-    res.redirect('/login')
-  }
-  console.log('Client going to ', req.route.path)
-  next()
-}
-
 app.get('/admin', function (req, res) {
   res.sendFile(path.join(__dirname, '/public/admin.html'))
 })
-app.get('/claim', myLogger, function (req, res) {
+app.get('/claim', function (req, res) {
   res.sendFile(path.join(__dirname, '/public/claim.html'))
 })
 app.get('/claimed', function (req, res) {
@@ -74,7 +74,7 @@ app.get('/login', function (req, res) {
   res.sendFile(path.join(__dirname, '/public/login.html'))
 })
 
-app.get('/', myLogger, function (req, res, next) {
+app.get('/', function (req, res, next) {
   res.sendFile(path.join(__dirname, '/public/index.html'))
 })
 
@@ -84,7 +84,7 @@ app.get('/', myLogger, function (req, res, next) {
 // })
 
 http.listen(3001, function () {
-  if (VERBOSE) console.log('listening on *:3001')
+  console.log('listening on *:3001')
 })
 
 // Every five seconds, score data is writen to CSV & score list is updated
@@ -124,19 +124,33 @@ scoreUpdate()
 io.on('connection', function (socket) {
   if (VERBOSE) console.log(socket.id + ' connected')
 
-    // why the fuck is this here if it does nothing?
-  socket.on('connect', function (auth) {
-    if (!auth) {
-      console.log('Not authorized.')
+  socket.on('verifyToken', function (creds) {
+    if (authorizeToken(creds)) {
+      if (VERBOSE) console.log(`User now authorized with id ${socket.id}`)
+      registerEvents(socket)
+      io.emit('scoreUpdate', score)
+      io.emit('highestScore', highestScore)
+      io.emit('taskList', tasks)
+    } else {
+      io.sockets.connected[socket.id].emit('accessDenied')
+      socket.disconnect()
     }
   })
+  // Authorise incoming clients username / password combo.
+  socket.on('authorizeClient', function (testCredentials) {
+    if (authorizedUsers[testCredentials.username] && authorizedUsers[testCredentials.username].password === testCredentials.password) {
+      authorizedUsers[testCredentials.username].token = uuid.v1()
+      io.sockets.connected[socket.id].emit('resolveAuth', authorizedUsers[testCredentials.username].token)
+    } else {
+      io.sockets.connected[socket.id].emit('resolveAuth', false)
+    }
+  })
+})
 
+function registerEvents (socket) {
   socket.on('auth', function (username) {
     users[socket.id] = username
     if (VERBOSE) console.log(socket.id + ' is now ' + username)
-    io.emit('scoreUpdate', score)
-    io.emit('highestScore', highestScore)
-    io.emit('taskList', tasks)
   })
 
   socket.on('claim', function (data) {
@@ -203,18 +217,8 @@ io.on('connection', function (socket) {
     }
   })
 
-  // Authorise incoming clients username / password combo.
-  socket.on('authorizeClient', function (testCredentials) {
-    console.log(testCredentials.username, testCredentials.password)
-    if (authorizedUsers[testCredentials.username] && authorizedUsers[testCredentials.username].password === testCredentials.password) {
-      console.log('User is authorized for access.')
-      authorizedUsers[testCredentials.username].token = uuid.v1()
-      io.sockets.connected[socket.id].emit('resolveAuth', authorizedUsers[testCredentials.username].token)
-    } else {
-      io.sockets.connected[socket.id].emit('resolveAuth', false)
-    }
-  })
-})
+  io.sockets.connected[socket.id].emit('verifyAccess')
+}
 
 // functions that will get called because of users. Either
 //  a) to send data or
@@ -267,5 +271,15 @@ function loadScoreData () {
       })
   } else {
     console.log('START: No score data to read.')
+  }
+}
+
+function authorizeToken (creds) {
+  var uname = creds.username
+  var token = creds.token
+  if (authorizedUsers[uname] && authorizedUsers[uname].token === token) {
+    return true
+  } else {
+    return false
   }
 }

@@ -25,7 +25,7 @@ function loginError () {
 
 function processForm (e) {
   if (e.preventDefault) e.preventDefault() // prevent default action
-  var username = document.getElementById('username').value
+  var username = document.getElementById('username').value.toLowerCase()
   var password = document.getElementById('password').value
   animateForm()
 
@@ -37,6 +37,7 @@ function processForm (e) {
   socket.on('resolveAuth', function (data) {
     if (data) {
       localStorage.setItem('authToken', data)
+      setCookie('username', username, 1)
       if (navigator.credentials) {
         var cred = new PasswordCredential({
           id: username,
@@ -44,13 +45,16 @@ function processForm (e) {
           name: name
         })
         navigator.credentials.store(cred).then(function () {
-          window.location.replace('/')
+          setInterval(function () {
+            window.location.replace('/')
+          }, 250)
         })
       } else {
-        window.location.replace('/')
+        setInterval(function () {
+          window.location.replace('/')
+        }, 250)
       }
     } else {
-      console.error(data)
       loginError()
     }
   })
@@ -65,4 +69,11 @@ if (form.attachEvent) {
   form.attachEvent('submit', processForm)
 } else {
   form.addEventListener('submit', processForm)
+}
+
+function setCookie (cname, cvalue, exdays) {
+  var d = new Date()
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000))
+  var expires = 'expires=' + d.toUTCString()
+  document.cookie = cname + '=' + cvalue + ';' + expires + 'path=/'
 }

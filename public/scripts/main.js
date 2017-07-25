@@ -3,8 +3,6 @@
 /* eslint-env browser */
 
 function load () {
-  console.log(localStorage.getItem('authToken'))
-
   var currentUser = signIn(function (username) { // eslint-disable-line no-unused-vars
     // if user is on scoreboard, set them as selected
     // in the future, this should read from userScores or something.
@@ -19,47 +17,54 @@ function load () {
     socket.emit('auth', username)
   })
 
-  socket.emit('taskData')
-
-  socket.on('taskList', function (tasks) {
-    localStorage.setItem('taskData', JSON.stringify(tasks))
+  socket.emit('verifyToken', {
+    'username': getCookie('username'),
+    'token': localStorage.getItem('authToken')
   })
 
-  socket.on('scoreUpdate', function (scores) {
-    // update score for each user on scoreboard
-    var currentUser = getCookie('username')
-    // as a backup, ALWAYS set the alt scoreboard to a score of 0.
-    document.getElementById('alt').innerHTML = currentUser.charAt(0).toUpperCase() + currentUser.slice(1) + ': 0 &#x1F31F'
-
-    for (const user in scores) {
-      var capitalisedUser = user.charAt(0).toUpperCase() + user.slice(1)
-      // if user is current user, also update their userTotalScore
-      // and set the alt display to their data
-      if (user === currentUser) {
-        capitalisedUser = currentUser.charAt(0).toUpperCase() + currentUser.slice(1)
-        localStorage.userTotalScore = scores[user]
-        document.getElementById('alt').innerHTML = capitalisedUser + ': ' + scores[user] + ' &#x1F31F'
-        // Hailey mode below
-        if (currentUser === 'philip') document.getElementById('phil').innerHTML = capitalisedUser + ': ' + scores[user] + ' &#x1F31F'
-      }
-      // if the element is one of the score board, it needs to be updated
-      let element = document.getElementById(user.toLowerCase())
-      if (element) {
-        element.innerHTML = (capitalisedUser + ': ' + scores[user] + ' &#x1F31F')
-      }
-    }
+  socket.on('accessDenied', function () {
+    goToLogin()
   })
 
-  socket.on('highestScore', function (data) {
-    let username = data[0]
-    let score = data[1]
-    if (document.getElementById('highscoreUsername')) {
-      document.getElementById('highscoreUsername').innerHTML = username.charAt(0).toUpperCase() + username.slice(1)
-      document.getElementById('highscorePoints').innerHTML = score
-    }
+  socket.on('verifyAccess', function () {
+    socket.emit('taskData')
+    socket.on('taskList', function (tasks) {
+      localStorage.setItem('taskData', JSON.stringify(tasks))
+    })
+
+    socket.on('scoreUpdate', function (scores) {
+      // update score for each user on scoreboard
+      var currentUser = getCookie('username')
+      // as a backup, ALWAYS set the alt scoreboard to a score of 0.
+      document.getElementById('alt').innerHTML = currentUser.charAt(0).toUpperCase() + currentUser.slice(1) + ': 0 &#x1F31F'
+      for (const user in scores) {
+        var capitalisedUser = user.charAt(0).toUpperCase() + user.slice(1)
+        // if user is current user, also update their userTotalScore
+        // and set the alt display to their data
+        if (user === currentUser) {
+          capitalisedUser = currentUser.charAt(0).toUpperCase() + currentUser.slice(1)
+          localStorage.userTotalScore = scores[user]
+          document.getElementById('alt').innerHTML = capitalisedUser + ': ' + scores[user] + ' &#x1F31F'
+          // Hailey mode below
+          if (currentUser === 'philip') document.getElementById('phil').innerHTML = capitalisedUser + ': ' + scores[user] + ' &#x1F31F'
+        }
+        // if the element is one of the score board, it needs to be updated
+        let element = document.getElementById(user.toLowerCase())
+        if (element) {
+          element.innerHTML = (capitalisedUser + ': ' + scores[user] + ' &#x1F31F')
+        }
+      }
+    })
+    socket.on('highestScore', function (data) {
+      let username = data[0]
+      let score = data[1]
+      if (document.getElementById('highscoreUsername')) {
+        document.getElementById('highscoreUsername').innerHTML = username.charAt(0).toUpperCase() + username.slice(1)
+        document.getElementById('highscorePoints').innerHTML = score
+      }
+    })
   })
 }
-
 function signIn (callback) {
   // read username cookie
   // call backs make this fully asynch (weee js!)
@@ -77,12 +82,16 @@ function signIn (callback) {
   }
 }
 
-function signOut () {
-  setCookie('username', '')
-  location.reload()
+function goToLogin () {
+  window.location.replace('/login')
 }
 
-// CONFIRMATION SECTION
+function signOut () {
+  setCookie('username', '')
+  goToLogin()
+}
+
+  // CONFIRMATION SECTION
 function initConfirm () { // eslint-disable-line no-unused-vars
   var username = getCookie('username')
   socket.emit('reqConfirmTask', username)
