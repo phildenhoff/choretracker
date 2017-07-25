@@ -299,9 +299,11 @@ div .login {
 
  .warning {
    text-align: center;
-   bottom: 15vh;
-   left: 0;
    position: absolute;
+   bottom: 15vh;
+   left: 33vw;
+   width: 33vw;
+   min-width: 200px;
  }
 
  .emphasize {
