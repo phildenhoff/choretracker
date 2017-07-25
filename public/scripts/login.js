@@ -54,6 +54,9 @@ function attemptLogin (username, password) {
             console.log('redirecting')
             window.location.replace('/')
           }, 250)
+        }).catch(function () {
+          console.error('Unable to store credentials due insecure environment.')
+          window.location.replace('/')
         })
       } else {
         setInterval(function () {
