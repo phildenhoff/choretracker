@@ -116,7 +116,6 @@ scoreUpdate()
 
 // TODO:
 // send oldest claim to user who goes to 'claim' page. Only remove from queue once answer is supplied
-// claims can be confirmed/denied
 // wipe scores remaing in queue on a certain day and remove scores from userscore
 // give monthly stats of who is highest scoring
 //
@@ -124,6 +123,9 @@ scoreUpdate()
 io.on('connection', function (socket) {
   if (VERBOSE) console.log(socket.id + ' connected')
 
+  // These events are required for basic authentication, and will open up the client to more functions
+
+  // Verify client has valid token for username
   socket.on('verifyToken', function (creds) {
     if (authorizeToken(creds)) {
       if (VERBOSE) console.log(`User now authorized with id ${socket.id}`)
@@ -136,13 +138,51 @@ io.on('connection', function (socket) {
       socket.disconnect()
     }
   })
-  // Authorise incoming clients username / password combo.
+  // Verify client has valid username / password combination for login
   socket.on('authorizeClient', function (testCredentials) {
     if (authorizedUsers[testCredentials.username] && authorizedUsers[testCredentials.username].password === testCredentials.password) {
       authorizedUsers[testCredentials.username].token = uuid.v1()
-      io.sockets.connected[socket.id].emit('resolveAuth', authorizedUsers[testCredentials.username].token)
+      io.sockets.connected[socket.id].emit('resolveAuth', {
+        accepted: true,
+        token: authorizedUsers[testCredentials.username].token
+      })
     } else {
-      io.sockets.connected[socket.id].emit('resolveAuth', false)
+      io.sockets.connected[socket.id].emit('resolveAuth', {
+        accepted: false,
+        error: {
+          type: 'username',
+          form: 'register',
+          msg: 'Username / Password do not match.'
+        }
+      })
+    }
+  })
+  // Verify client can register username with provided password
+  socket.on('registerAccount', function (registrationInfo) {
+    var username = registrationInfo.username
+    var password = registrationInfo.password
+
+    if (authorizedUsers[username]) {
+      console.error(`Client tried to register account that already exists (${username})`)
+      io.sockets.connected[socket.id].emit('resolveRegister', {
+        accepted: false,
+        error: {
+          msg: 'Account already exists.',
+          type: 'username'
+        }
+      })
+    } else if (!authorizedUsers[username]) {
+      console.log(`New user account ${username}`)
+      authorizedUsers[username] = {
+        password: password,
+        token: undefined,
+        socketID: undefined
+      }
+      io.sockets.connected[socket.id].emit('resolveRegister', {
+        accepted: true,
+        msg: 'Account successfully registered.'
+      })
+    } else {
     }
   })
 })
@@ -173,8 +213,9 @@ function registerEvents (socket) {
   socket.on('taskData', function () {
     io.sockets.connected[socket.id].emit('taskList', tasks)
   })
-
+  //
   // confirmation queue things
+  //
   socket.on('reqConfirmTask', function (username) {
     // If confimation queue is empty, return [true, null] stating there are no available jobs to do
     // For each item in the queue:

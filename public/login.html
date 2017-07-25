@@ -10,7 +10,7 @@
 			<span id='userLeadScore' class='fadeOut'>
 				Login to claim and confirm points for chores.
 			</span>
-			<div class='login'>
+			<div class='login fadeOut' id='login'>
 				<form id='login-form' class='fadeOut'>
 					<label>Username</label>
 					<input id='username' type='text' placeholder="CallMeBigPoppa" name='uname' required />
@@ -19,13 +19,25 @@
 
 					<button type='submit' class='btn'>Login</button>
 				</form>
-				<a href="/register"><p class="register">I don't have an account yet!</p></a>
-
-				<p class='warning'>
-					This page is <span class='emphasize'>not</span> secure. <br / />
-					Your credentials are sent and stored in plaintext.
-				</p>
+				<a href="#" id='registerEntryBtn' class='fadeOut'><p class="register" onclick="showRegister()">I don't have an account yet!</p></a>
 			</div>
+
+			<div class='login fadeOut' id='register'>
+				<form id='register-form' class='fadeOut'>
+					<label>Username</label>
+					<input id='regUsername' type='text' placeholder="Ross McBeast" name='uname' required class=''/>
+					<label>Password</label>
+					<input id='regPassword' type='password' placeholder='sexybeast' name='password' required />
+					<label>Confirm password</label>
+					<input id='confirmPassword' type='password' placeholder='sexybeast' name='confirmPassword' required />
+
+					<button type='submit' class='btn'>Register</button>
+				</form>
+			</div>
+			<p class='warning'>
+				This page is <span class='emphasize'>not</span> secure. <br / />
+				Your credentials are sent and stored in plaintext.
+			</p>
 
 			<script src="/socket.io/socket.io.js"></script>
 			<script src="./scripts/login.js"></script>
