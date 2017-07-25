@@ -1,6 +1,16 @@
 /* eslint no-unused-vars: ['error', { 'varsIgnorePattern': 'load|submitLogin' }] */
 /* global socket */
 /* eslint-env browser */
+function load () {
+  if (navigator.credentials) {
+    navigator.credentials.get({password: true}).then(c => {
+      if (c) {
+        console.log('attempting login with saved credentials')
+        attemptLogin(c.id, c.passwordName)
+      }
+    })
+  }
+}
 
 function animateForm () {
   // Hide the login form on authorisation
@@ -23,17 +33,11 @@ function loginError () {
   }, 200)
 }
 
-function processForm (e) {
-  if (e.preventDefault) e.preventDefault() // prevent default action
-  var username = document.getElementById('username').value.toLowerCase()
-  var password = document.getElementById('password').value
-  animateForm()
-
+function attemptLogin (username, password) {
   socket.emit('authorizeClient', {
     'username': username,
     'password': password
   })
-
   socket.on('resolveAuth', function (data) {
     if (data) {
       localStorage.setItem('authToken', data)
@@ -45,12 +49,15 @@ function processForm (e) {
           name: name
         })
         navigator.credentials.store(cred).then(function () {
+          console.log('Credentials stored')
           setInterval(function () {
+            console.log('redirecting')
             window.location.replace('/')
           }, 250)
         })
       } else {
         setInterval(function () {
+          console.log('No navigator.credentials')
           window.location.replace('/')
         }, 250)
       }
@@ -58,7 +65,15 @@ function processForm (e) {
       loginError()
     }
   })
+}
 
+function processForm (e) {
+  if (e.preventDefault) e.preventDefault() // prevent default action
+  var username = document.getElementById('username').value.toLowerCase()
+  var password = document.getElementById('password').value
+  animateForm()
+
+  attemptLogin(username, password)
   return false // Prevent refreshing page
 }
 
