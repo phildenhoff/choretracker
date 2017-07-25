@@ -234,16 +234,24 @@ h1 {
 *  Login Page
 *
 */
+*
+div .login {
+  width: 60vw;
+  margin-top: 30vh;
+  margin-left: 20vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
 .fadeOut {
   transition: opacity .2s ease-in;
 }
 
  .content form#login-form{
-   width: 33vw;
-   top: 20vw;
-   left: 33vw;
-   position: absolute;
+   display: flex;
+   flex-direction: column;
  }
 
  .content .login input {
@@ -251,7 +259,7 @@ h1 {
    padding: 10px;
    border: none;
    width: 100%;
-   margin: 0px 10px 2vh 10px;
+   margin: 0px 0 2vh 0;
    outline: none!important;
    border-radius: 5px;
    margin-top: 5px;
@@ -263,12 +271,10 @@ h1 {
 
  .login .btn {
    line-height: 5vh;
-   display: inline-block;
-   width: 33%;
+   left: inherit;
+   position: inherit;
    height: auto;
-   position: relative;
-   left: 33%;
-   margin-top: 5px;
+   align-self: center;
    box-shadow: 4px 5px 15px 0 rgba(0,0,0,.22);
    border-radius: 10px;
    cursor: pointer;
@@ -288,10 +294,21 @@ h1 {
 
  .warning {
    text-align: center;
-   top: 75vh;
+   top: 15vh;
    position: relative;
  }
 
  .emphasize {
    font-style: italic;
+ }
+
+ p.register {
+   background-color: #d0f7d1;
+   color: #969696;
+   width: 100%;
+   min-width: 225px;
+   max-width: 225px;
+   padding: 5px;
+   border-radius: 5px;
+   text-align: center;
  }
